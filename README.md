@@ -1,5 +1,5 @@
 ## SummitAR | Your new augmented reality navigation companion
-Concept and features by Maria Bisaga
+#Concept and features by Maria Bisaga
 
 ## HDAugmentedReality, written by Danijel Huis
 https://github.com/DanijelHuis/HDAugmentedReality
