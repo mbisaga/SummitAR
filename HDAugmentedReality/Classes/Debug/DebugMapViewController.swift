@@ -17,6 +17,79 @@ open class DebugMapViewController: UIViewController, MKMapViewDelegate, CLLocati
     fileprivate var locationManager = CLLocationManager()
     fileprivate var heading: Double = 0
     fileprivate var interactionInProgress = false
+    fileprivate var currentLocation : CLLocationCoordinate2D?
+    
+    @IBAction func addNewLocationTapped(_ sender: AnyObject) {
+        
+        //show alert form
+        let alertController = UIAlertController(title: "Add new location", message: "Enter a name and description", preferredStyle: .alert)
+
+        let addAction = UIAlertAction(title: "Add", style: .default) { (_) in
+            let nameTextField = alertController.textFields![0] as UITextField
+            let detailsTextField = alertController.textFields![1] as UITextField
+            self.setAnnotation(name: nameTextField.text!, details: detailsTextField.text!)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+        
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Name"
+            //textField.keyboardType = .EmailAddress
+        }
+        
+        alertController.addTextField { (textField) in
+            textField.placeholder = "Description"
+           // textField.secureTextEntry = true
+        }
+        
+        alertController.addAction(addAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true)
+
+    }
+    
+    
+     func setAnnotation(name: String, details: String) {
+        /*var url: NSURL = NSURL(string: "http://mbisaga.create.stedwards.edu/summit/summitAPI.php")!
+         var request:NSMutableURLRequest = NSMutableURLRequest(url:url as URL)
+         var bodyData = "data=latutudeInput.text, data=longitudeInput.text, nameInput.text, detailsInput.text"
+         request.httpMethod = "POST"
+         print(bodyData)
+         //encapsulate and send
+         request.httpBody = bodyData.data(using: String.Encoding.utf8);
+         NSURLConnection.sendAsynchronousRequest(request as URLRequest, queue: OperationQueue.main)
+         {
+         (response, data, error) in
+         print(response)
+         
+         }*/
+        
+        //extract lat and long
+        let latitude = currentLocation?.latitude
+        let longitude = currentLocation?.longitude
+
+        var request = URLRequest(url: URL(string: "http://mbisaga.create.stedwards.edu/summit/summitAPI.php")!)
+        request.httpMethod = "POST"
+        let postString = "latitude=\(latitude!)&longitude=\(longitude!)&name=\(name)&details=\(details)"
+        request.httpBody = postString.data(using: .utf8)
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {                                                 // check for fundamental networking error
+                print("error=\(error)")
+                return
+            }
+            
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {           // check for http errors
+                print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                print("response = \(response)")
+            }
+            
+            let responseString = String(data: data, encoding: .utf8)
+            print("responseString = \(responseString)")
+        }
+        task.resume()
+        
+    }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
     {
@@ -37,7 +110,17 @@ open class DebugMapViewController: UIViewController, MKMapViewDelegate, CLLocati
         {
             addAnnotationsOnMap(annotations)
         }
-        locationManager.delegate = self
+        // Ask for Authorisation from the User.
+        self.locationManager.requestAlwaysAuthorization()
+        
+        // For use in foreground
+        self.locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+        }
     }
     
     open override func viewDidAppear(_ animated: Bool)
@@ -111,6 +194,10 @@ open class DebugMapViewController: UIViewController, MKMapViewDelegate, CLLocati
             camera.heading = CLLocationDirection(heading);
             self.mapView.setCamera(camera, animated: false)
         }
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        currentLocation = manager.location?.coordinate
     }
     
     open func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool)

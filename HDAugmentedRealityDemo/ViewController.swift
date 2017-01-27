@@ -8,12 +8,27 @@
 
 import UIKit
 import CoreLocation
+import Alamofire
+//import ASIHTTPRequest.h
+//import ASIFormDataRequest.h
+//import JSON.h
 
 class ViewController: UIViewController, ARDataSource
 {
+    let locationManager = CLLocationManager()
+    var arViewController : ARViewController! = ARViewController()
+    
+    @IBOutlet weak var latitudeInput: UITextField!
+    @IBOutlet weak var longitudeInput: UITextField!
+    @IBOutlet weak var nameInput: UITextField!
+    @IBOutlet weak var detailsInput: UITextField!
+    
+    
     override func viewDidLoad()
     {
+        
         super.viewDidLoad()
+        
     }
     
     /// Creates random annotations around predefined center point and presents ARViewController modally
@@ -31,14 +46,13 @@ class ViewController: UIViewController, ARDataSource
         
         // Create random annotations around center point    //@TODO
         //FIXME: set your initial position here, this is used to generate random POIs
-        let lat = 45.558054
-        let lon = 18.682622
-        let delta = 0.05
-        let count = 50
-        let dummyAnnotations = self.getDummyAnnotations(centerLatitude: lat, centerLongitude: lon, delta: delta, count: count)
+        //        let lat = 30.2672
+        //        let lon = -97.7431
+        //        let delta = 0.05
+        //        let count = 50
+        //let dummyAnnotations = self.getDummyAnnotations(centerLatitude: lat, centerLongitude: lon, delta: delta, count: count)
         
         // Present ARViewController
-        let arViewController = ARViewController()
         arViewController.dataSource = self
         arViewController.maxDistance = 0
         arViewController.maxVisibleAnnotations = 100
@@ -46,15 +60,15 @@ class ViewController: UIViewController, ARDataSource
         arViewController.headingSmoothingFactor = 0.05
         arViewController.trackingManager.userDistanceFilter = 25
         arViewController.trackingManager.reloadDistanceFilter = 75
-        arViewController.setAnnotations(dummyAnnotations)
+        arViewController.setAnnotations(getAnnotations())
         arViewController.uiOptions.debugEnabled = true
         arViewController.uiOptions.closeButtonEnabled = true
         //arViewController.interfaceOrientationMask = .landscape
         arViewController.onDidFailToFindLocation =
-        {
-            [weak self, weak arViewController] elapsedSeconds, acquiredLocationBefore in
+            {
+                [weak self, weak arViewController] elapsedSeconds, acquiredLocationBefore in
                 
-            self?.handleLocationFailure(elapsedSeconds: elapsedSeconds, acquiredLocationBefore: acquiredLocationBefore, arViewController: arViewController)
+                self?.handleLocationFailure(elapsedSeconds: elapsedSeconds, acquiredLocationBefore: acquiredLocationBefore, arViewController: arViewController)
         }
         self.present(arViewController, animated: true, completion: nil)
     }
@@ -124,4 +138,45 @@ class ViewController: UIViewController, ARDataSource
             self.presentedViewController?.present(alert, animated: true, completion: nil)
         }
     }
+    
+    /* fileprivate func getAnnotations() -> Array<ARAnnotation>
+     {
+     var annotations: [ARAnnotation] = []
+     
+     let frostBank = ARAnnotation.newPOI(lat: 30.2664665, long: -97.7448811, title: "Frost Bank", message: "-$$$$")
+     let marriott = ARAnnotation.newPOI(lat: 30.2642518, long: -97.7453102, title: "JW Marriott", message: "ZZZZZ")
+     let capitalFactory = ARAnnotation.newPOI(lat: 30.2698765, long: -97.7413942, title: "Capital Factory", message: "Expensive parking")
+     let texasCapitol = ARAnnotation.newPOI(lat: 30.2745279, long: -97.7416624, title: "Texas Capitol", message: "Fancy gardens")
+     
+     annotations = [frostBank, marriott, capitalFactory, texasCapitol]
+     
+     return annotations
+     }*/
+    
+    fileprivate func getAnnotations() -> Array<ARAnnotation> {
+        var annotations: [ARAnnotation] = []
+        
+        let url = "http://mbisaga.create.stedwards.edu/summit/summitAPIgetAnnotations.php"
+        Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default)
+            .responseJSON { response in
+                //to get JSON return value
+                if let result = response.result.value {
+                    let JSON = result as! [NSDictionary]
+                    for dict in JSON{
+                        let lat = dict["latitude"] as! String
+                        let long = dict["longitude"] as! String
+                        let name = dict["name"] as! String
+                        let details = dict["details"] as! String
+                        let annotation = ARAnnotation.newPOI(lat: Double(lat)!, long: Double(long)!, title: name, message: details)
+                        annotations.append(annotation)
+                    }
+                }
+                
+                self.arViewController.setAnnotations(annotations)
+        }
+        
+        return annotations
+    }
+    
+    
 }

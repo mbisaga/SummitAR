@@ -26,7 +26,13 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>App uses camera for Augmented Reality.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App uses location for Augmented Reality.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App uses location for Augmented Reality.</string>
+	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
@@ -43,6 +49,21 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict/>
+		<key>http://mbisaga.create.stedwards.edu/</key>
+		<dict/>
+		<key>NSTemporaryExceptionMinimumTLSVersion</key>
+		<string>TLSv1.1</string>
+		<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+		<true/>
+		<key>NSIncludesSubdomain</key>
+		<true/>
+	</dict>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -50,7 +71,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>App uses camera for Augmented Reality.</string>
 </dict>
 </plist>
