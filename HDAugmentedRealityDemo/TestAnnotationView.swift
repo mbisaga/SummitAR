@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 open class TestAnnotationView: ARAnnotationView, UIGestureRecognizerDelegate
 {
@@ -86,39 +87,48 @@ open class TestAnnotationView: ARAnnotationView, UIGestureRecognizerDelegate
     {
         if let annotation = self.annotation
         {
-            
-            
-            let alertView = UIAlertView(title: annotation.title!, message: annotation.message!, delegate: nil, cancelButtonTitle: "OK", otherButtonTitles: "Report")
-            alertView.show()
- 
-            /*
-             let alert = UIAlertController(title: annotation.title!, message: annotation.message!, preferredStyle: UIAlertControllerStyle.alert)
-             let action1 = UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil)
-             let action2 = UIAlertAction(title: "Report", style: UIAlertActionStyle.default) { (action) in
+             let alert = UIAlertController(title: annotation.title!, message: annotation.message!, preferredStyle: .alert)
+             let action1 = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+             let action2 = UIAlertAction(title: "Report", style: .default) { (action) in
              // Do something here when action was pressed
+                self.reportAnnotation(annotation: annotation)
              }
              
              alert.addAction(action1)
              alert.addAction(action2)
             
-            self.present(alert, animated: true, completion: nil)*/
-             //alert.present(alert, animated: true, completion: nil)
-            //alert.show()
-            
-            ////////////
-            /*
-           let alertController = UIAlertController(title: NSLocalizedString("OK", comment: ""), message: NSLocalizedString("My message", comment: ""), preferredStyle: .alert)
-            let OKAction = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default) { (action) in }
-            alertController.addAction(OKAction)
-            //self.present(alertController, animated: true)
-            [UIApplication sharedApplication].keyWindow.rootViewController.present(alertController, animated: true)
-            //UIApplication.shared.keyWindow?.rootViewController?.present(alertController, animated: true)*/
-
-
+            showAlert(alertController: alert)
         }
         
         
     }
 
+    func reportAnnotation(annotation: ARAnnotation) {
+        let latitude = annotation.location?.coordinate.latitude
+        let longitude = annotation.location?.coordinate.longitude
 
+        Alamofire.request("http://mbisaga.create.stedwards.edu/summit/reportAnnotation.php", method:.get, parameters: ["latitude": latitude!, "longitude": longitude!, "name": annotation.title!])
+            .responseJSON { response in
+                if let error = response.result.error as? AFError {
+                    if(error.isResponseSerializationError) {
+                        return
+                    }
+                    let alert = UIAlertController(title: "Error", message: "Failed to report the annotation", preferredStyle: .alert)
+                    let action1 = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
+                    alert.addAction(action1)
+                    self.showAlert(alertController: alert)
+                }
+        }
+    }
+
+    func showAlert(alertController: UIAlertController) {
+        if var topController = UIApplication.shared.keyWindow?.rootViewController {
+            while let presentedViewController = topController.presentedViewController {
+                topController = presentedViewController
+            }
+            
+            topController.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
 }
