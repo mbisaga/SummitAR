@@ -68,7 +68,7 @@ open class ARViewController: UIViewController, ARTrackingManagerDelegate
      *       annotation that are closer to this value will be higher.
      *       Default value is 0 meters, which means that distances of annotations don't affect their visiblity.
      */
-    open var maxDistance: Double = 0
+    open var maxDistance: Double = 100
     /// Class for managing geographical calculations. Use it to set properties like reloadDistanceFilter, userDistanceFilter and altitudeSensitive
     fileprivate(set) open var trackingManager: ARTrackingManager = ARTrackingManager()
     /// Image for close button. If not set, default one is used.
@@ -165,7 +165,7 @@ open class ARViewController: UIViewController, ARTrackingManagerDelegate
         self.trackingManager.delegate = self
         self.maxVerticalLevel = 5
         self.maxVisibleAnnotations = 100
-        self.maxDistance = 0
+        self.maxDistance = 100
         
         NotificationCenter.default.addObserver(self, selector: #selector(ARViewController.locationNotification(_:)), name: NSNotification.Name(rawValue: "kNotificationLocationSet"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(ARViewController.appWillEnterForeground(_:)), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)

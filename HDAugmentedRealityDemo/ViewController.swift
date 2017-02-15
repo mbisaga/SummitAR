@@ -54,7 +54,7 @@ class ViewController: UIViewController, ARDataSource
         
         // Present ARViewController
         arViewController.dataSource = self
-        arViewController.maxDistance = 0
+        arViewController.maxDistance = 100
         arViewController.maxVisibleAnnotations = 100
         arViewController.maxVerticalLevel = 5
         arViewController.headingSmoothingFactor = 0.05

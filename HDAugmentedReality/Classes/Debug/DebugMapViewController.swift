@@ -120,13 +120,24 @@ open class DebugMapViewController: UIViewController, MKMapViewDelegate, CLLocati
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.startUpdatingLocation()
+            
+
         }
+        
+
     }
     
     open override func viewDidAppear(_ animated: Bool)
     {
         super.viewDidAppear(animated)
         locationManager.startUpdatingHeading()
+        
+      
+        let lat = currentLocation?.latitude
+        let long = currentLocation?.longitude
+        let span = MKCoordinateSpanMake(0.0075, 0.0075)
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: lat!, longitude: long!), span: span)
+        mapView.setRegion(region, animated: true)
     }
     
     open override func viewDidDisappear(_ animated: Bool)
