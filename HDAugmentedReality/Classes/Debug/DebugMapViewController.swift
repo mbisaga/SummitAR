@@ -135,7 +135,7 @@ open class DebugMapViewController: UIViewController, MKMapViewDelegate, CLLocati
       
         let lat = currentLocation?.latitude
         let long = currentLocation?.longitude
-        let span = MKCoordinateSpanMake(0.0075, 0.0075)
+        let span = MKCoordinateSpanMake(0.0005, 0.0005)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: lat!, longitude: long!), span: span)
         mapView.setRegion(region, animated: true)
     }

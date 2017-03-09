@@ -72,7 +72,8 @@ open class TestAnnotationView: ARAnnotationView, UIGestureRecognizerDelegate
         {
             let distance = annotation.distanceFromUser > 1000 ? String(format: "%.1fkm", annotation.distanceFromUser / 1000) : String(format:"%.0fm", annotation.distanceFromUser)
             
-            let text = String(format: "%@\nAZ: %.0f°\nDST: %@", title, annotation.azimuth, distance)
+            //let text = String(format: "%@\nAZ: %.0f°\nDST: %@", title, annotation.azimuth, distance)
+            let text = String(format: "%@\nDistance: %@", title, distance)
             self.titleLabel?.text = text
         }
     }

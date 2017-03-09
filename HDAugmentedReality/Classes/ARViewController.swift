@@ -800,10 +800,10 @@ open class ARViewController: UIViewController, ARTrackingManagerDelegate
             currentHeading = (newHeading * filterFactor) + (currentHeading  * (1.0 - filterFactor))
         }
         
-        self.overlayView.frame = self.overlayFrame()
-        self.updateAnnotationsForCurrentHeading()
-        
-        logText("Heading: \(self.trackingManager.heading)")
+        //self.overlayView.frame = self.overlayFrame()
+        //self.updateAnnotationsForCurrentHeading()
+
+        //logText("Heading: \(self.trackingManager.heading)")
     }
     
     internal func arTrackingManager(_ trackingManager: ARTrackingManager, didUpdateUserLocation: CLLocation?)
@@ -1132,13 +1132,15 @@ open class ARViewController: UIViewController, ARTrackingManagerDelegate
         debugLabel.textAlignment = NSTextAlignment.left
         view.addSubview(debugLabel)
         self.debugLabel = debugLabel
+        debugLabel.isHidden = true
+        let lightblue = UIColor(red: 0, green: 0.4784, blue: 1, alpha: 1.0)
         
         let debugMapButton: UIButton = UIButton(type: UIButtonType.custom)
         debugMapButton.frame = CGRect(x: 5,y: 5,width: 40,height: 40);
         debugMapButton.addTarget(self, action: #selector(ARViewController.debugButtonTap), for: UIControlEvents.touchUpInside)
         debugMapButton.setTitle("map", for: UIControlState())
-        debugMapButton.backgroundColor = UIColor.white.withAlphaComponent(0.5)
-        debugMapButton.setTitleColor(UIColor.black, for: UIControlState())
+        debugMapButton.backgroundColor = lightblue
+        debugMapButton.setTitleColor(UIColor.white, for: UIControlState())
         self.view.addSubview(debugMapButton)
         self.debugMapButton = debugMapButton
     }
