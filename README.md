@@ -10,6 +10,8 @@ Augmented Reality component for iOS, written in Swift 3.0.
 - DB Connection + API
 - Crowdsourcing feature
 - Report feature
+- UI Changes
+- Code refactoring and configuration
 
 ## Features by Danijel Huis
 
